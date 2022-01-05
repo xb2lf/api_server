@@ -5,6 +5,12 @@ const db = require('../db/index');
 //导入用户密码加密模块
 const bcrypt = require('bcryptjs');
 
+//导入生成Token的包
+const jwt = require('jsonwebtoken');
+
+//导入全局的配置文件
+const config = require('../config');
+
 // 注册用户的处理函数
 exports.regUser = (req, res) => {
   // 获取客户端提交的用户信息
@@ -34,6 +40,15 @@ exports.login = (req, res) => {
   db.query(sql, userinfo.username, (err, results) => {
     if (err) return res.cc(err);
     if (results.length !== 1) return res.cc('登录失败！');
+    //获取用户输入的密码和数据库中存储的用户密码相比较，校验下是否一致
+    const compareResult = bcrypt.compareSync(userinfo.password, results[0].password);
+    if (!compareResult) return res.cc('登录失败！')
+    const user = { ...results[0], password: '', user_pic: '' };
+    const tokenStr = jwt.sign(user, config.jwtSecretKey, { expiresIn: config.expiresIn });
+    res.send({
+      status: 0,
+      message: '登录成功',
+      token: `Bearer ${tokenStr}`
+    })
   })
-  res.send('login ok')
 }
