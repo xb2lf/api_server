@@ -33,7 +33,7 @@ exports.login = (req, res) => {
   const sql = 'select * from ev_users where username=?';
   db.query(sql, userinfo.username, (err, results) => {
     if (err) return res.cc(err);
-    if (results.length > 0) return res.cc('用户名被占用，请更换其他用户名！');
+    if (results.length !== 1) return res.cc('登录失败！');
   })
   res.send('login ok')
 }
