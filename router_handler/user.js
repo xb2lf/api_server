@@ -28,5 +28,12 @@ exports.regUser = (req, res) => {
 
 // 登录的处理函数
 exports.login = (req, res) => {
+  // 获取客户端提交的用户信息
+  const userinfo = req.body;
+  const sql = 'select * from ev_users where username=?';
+  db.query(sql, userinfo.username, (err, results) => {
+    if (err) return res.cc(err);
+    if (results.length > 0) return res.cc('用户名被占用，请更换其他用户名！');
+  })
   res.send('login ok')
 }
