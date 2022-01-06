@@ -5,6 +5,8 @@ const app = express();
 const expressJWT = require('express-jwt');
 const userRouter = require('./router/user');
 const userinfoRouter = require('./router/userinfo');
+const artCateRouter = require('./router/artcate')
+const articleRouter = require('./router/article');
 //导入全局的配置文件
 const config = require('./config');
 
@@ -12,6 +14,9 @@ app.use(cors())
 
 // app.use(express.json());
 app.use(express.urlencoded({ extended: false }))
+
+// 托管静态资源文件
+app.use('/uploads', express.static('./uploads'))
 
 //用来统一处理错误，封装res.cc函数
 app.use((req, res, next) => {
@@ -31,7 +36,8 @@ app.use(expressJWT({ secret: config.jwtSecretKey, algorithms: ['HS256'], credent
 
 app.use('/api', userRouter);
 app.use('/my', userinfoRouter)
-
+app.use('/my/article', artCateRouter)
+app.use('/my/article', articleRouter)
 //全局错误中间件
 app.use((err, req, res, next) => {
   // 验证失败导致的错误
